@@ -1,14 +1,17 @@
-/* encodings/utf8.h -- VERSION 1.0
+/**
+ * @file encodings/utf8.h
+ * @authors antirez, yhirose, Antonio Prates <hello@aprates.dev>
+ * @brief Guerrilla line editing library against the idea that
+ *        a line editing lib needs to be 20,000 lines of C code.
+ *        Does a number of crazy assumptions that happen to be true
+ *        in 99.9999% of the 2010 UNIX computers around.
+ * 
+ * @version 1.3.4
+ * @date 2023-11-16
  *
- * Guerrilla line editing library against the idea that a line editing lib
- * needs to be 20,000 lines of C code.
- *
- * See linenoise.c for more information.
- *
- * ------------------------------------------------------------------------
- *
- * Copyright (c) 2010-2014, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ * @copyright
+ * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez@gmail.com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis@gmail.com>
  *
  * All rights reserved.
  *
@@ -34,22 +37,12 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Forked from https://github.com/yhirose/linenoise
  */
 
-#ifndef __LINENOISE_ENCODINGS_UTF8_H
-#define __LINENOISE_ENCODINGS_UTF8_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 size_t linenoiseUtf8PrevCharLen(const char* buf, size_t buf_len, size_t pos, size_t *col_len);
 size_t linenoiseUtf8NextCharLen(const char* buf, size_t buf_len, size_t pos, size_t *col_len);
 size_t linenoiseUtf8ReadCode(int fd, char* buf, size_t buf_len, int* cp);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __LINENOISE_ENCODINGS_UTF8_H */
-

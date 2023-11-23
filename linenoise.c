@@ -1,17 +1,17 @@
-/* linenoise.c -- guerrilla line editing library against the idea that a
- * line editing lib needs to be 20,000 lines of C code.
+/**
+ * @file linenoise.c
+ * @authors antirez, yhirose, Antonio Prates <hello@aprates.dev>
+ * @brief Guerrilla line editing library against the idea that
+ *        a line editing lib needs to be 20,000 lines of C code.
+ *        Does a number of crazy assumptions that happen to be true
+ *        in 99.9999% of the 2010 UNIX computers around.
+ * 
+ * @version 1.3.4
+ * @date 2023-11-16
  *
- * You can find the latest source code at:
- *
- *   http://github.com/antirez/linenoise
- *
- * Does a number of crazy assumptions that happen to be true in 99.9999% of
- * the 2010 UNIX computers around.
- *
- * ------------------------------------------------------------------------
- *
- * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ * @copyright
+ * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez@gmail.com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis@gmail.com>
  *
  * All rights reserved.
  *
@@ -38,6 +38,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
+ * Forked from https://github.com/yhirose/linenoise
+ * 
  * ------------------------------------------------------------------------
  *
  * References:
@@ -62,11 +64,11 @@
  *    Effect: if n is 1, clear from beginning of line to cursor
  *    Effect: if n is 2, clear entire line
  *
- * CUF (CUrsor Forward)
+ * CUF (Cursor Forward)
  *    Sequence: ESC [ n C
  *    Effect: moves cursor forward n chars
  *
- * CUB (CUrsor Backward)
+ * CUB (Cursor Backward)
  *    Sequence: ESC [ n D
  *    Effect: moves cursor backward n chars
  *
@@ -75,7 +77,7 @@
  *
  * DSR (Device Status Report)
  *    Sequence: ESC [ 6 n
- *    Effect: reports the current cusor position as ESC [ n ; m R
+ *    Effect: reports the current cursor position as ESC [ n ; m R
  *            where n is the row and m is the column
  *
  * When multi line mode is enabled, we also use an additional escape
@@ -100,7 +102,6 @@
  * ED (Erase display)
  *    Sequence: ESC [ 2 J
  *    Effect: clear the whole screen
- *
  */
 
 #include <termios.h>
@@ -109,6 +110,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/stat.h>
@@ -185,6 +187,12 @@ FILE *lndebug_fp = NULL;
 #define lndebug(fmt, ...)
 #endif
 
+static char *strdup(const char *s) {
+    char *copy = s ? malloc(strlen(s) + 1) : NULL;
+    if (copy) strcpy(copy, s);
+    return copy;
+}
+
 /* ========================== Encoding functions ============================= */
 
 /* Get byte length and column length of the previous character */
@@ -224,7 +232,7 @@ void linenoiseSetEncodingFunctions(
     readCode = readCodeFunc;
 }
 
-/* Get column length from begining of buffer to current byte position */
+/* Get column length from beginning of buffer to current byte position */
 static size_t columnPos(const char *buf, size_t buf_len, size_t pos) {
     size_t ret = 0;
     size_t off = 0;
@@ -237,7 +245,7 @@ static size_t columnPos(const char *buf, size_t buf_len, size_t pos) {
     return ret;
 }
 
-/* Get column length from begining of buffer to current byte position for multiline mode*/
+/* Get column length from beginning of buffer to current byte position for multiline mode*/
 static size_t columnPosForMultiLine(const char *buf, size_t buf_len, size_t pos, size_t cols, size_t ini_pos) {
     size_t ret = 0;
     size_t colwid = ini_pos;
@@ -316,7 +324,7 @@ static int enableRawMode(int fd) {
     raw.c_oflag &= ~(OPOST);
     /* control modes - set 8 bit chars */
     raw.c_cflag |= (CS8);
-    /* local modes - choing off, canonical off, no extended functions,
+    /* local modes - echoing off, canonical off, no extended functions,
      * no signal chars (^Z,^C) */
     raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
     /* control chars - set return condition: min number of bytes and timer.
@@ -465,7 +473,7 @@ static void refreshLineWithCompletion(struct linenoiseState *ls, linenoiseComple
  * If the function returns non-zero, the caller should handle the
  * returned value as a byte read from the standard input, and process
  * it as usually: this basically means that the function may return a byte
- * read from the termianl but not processed. Otherwise, if zero is returned,
+ * read from the terminal but not processed. Otherwise, if zero is returned,
  * the input was consumed by the completeLine() function to navigate the
  * possible completions, and the caller should read for the next characters
  * from stdin. */
@@ -786,7 +794,7 @@ static void refreshMultiLine(struct linenoiseState *l, int flags) {
         rpos2 = (pcollen+colpos2+l->cols)/l->cols; /* Current cursor relative row */
         lndebug("rpos2 %d", rpos2);
 
-        /* Go up till we reach the expected positon. */
+        /* Go up till we reach the expected position. */
         if (rows-rpos2 > 0) {
             lndebug("go-up %d", rows-rpos2);
             snprintf(seq,64,"\x1b[%dA", rows-rpos2);
@@ -957,7 +965,7 @@ void linenoiseEditBackspace(struct linenoiseState *l) {
     }
 }
 
-/* Delete the previosu word, maintaining the cursor at the start of the
+/* Delete the previous word, maintaining the cursor at the start of the
  * current word. */
 void linenoiseEditDeletePrevWord(struct linenoiseState *l) {
     size_t old_pos = l->pos;
@@ -984,7 +992,7 @@ void linenoiseEditDeletePrevWord(struct linenoiseState *l) {
  *    each time there is some data arriving in the standard input.
  *
  * The user can also call linenoiseEditHide() and linenoiseEditShow() if it
- * is required to show some input arriving asyncronously, without mixing
+ * is required to show some input arriving asynchronously, without mixing
  * it with the currently edited line.
  *
  * When linenoiseEditFeed() returns non-NULL, the user finished with the
@@ -1015,7 +1023,7 @@ int linenoiseEditStart(struct linenoiseState *l, int stdin_fd, int stdout_fd, ch
 
     /* Buffer starts empty. */
     l->buf[0] = '\0';
-    l->buflen--; /* Make sure there is always space for the nulterm */
+    l->buflen--; /* Make sure there is always space for the null terminator */
 
     /* If stdin is not a tty, stop here with the initialization. We
      * will actually just read a line from standard input in blocking
@@ -1226,7 +1234,7 @@ void linenoiseEditStop(struct linenoiseState *l) {
 }
 
 /* This just implements a blocking loop for the multiplexed API.
- * In many applications that are not event-drivern, we can just call
+ * In many applications that are not event-driven, we can just call
  * the blocking linenoise API, wait for the user to complete the editing
  * and return the buffer. */
 static char *linenoiseBlockingEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, const char *prompt)

@@ -1,14 +1,17 @@
-/* linenoise.h -- VERSION 1.0
+/**
+ * @file linenoise.h
+ * @authors antirez, yhirose, Antonio Prates <hello@aprates.dev>
+ * @brief Guerrilla line editing library against the idea that
+ *        a line editing lib needs to be 20,000 lines of C code.
+ *        Does a number of crazy assumptions that happen to be true
+ *        in 99.9999% of the 2010 UNIX computers around.
+ * 
+ * @version 1.3.4
+ * @date 2023-11-16
  *
- * Guerrilla line editing library against the idea that a line editing lib
- * needs to be 20,000 lines of C code.
- *
- * See linenoise.c for more information.
- *
- * ------------------------------------------------------------------------
- *
- * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ * @copyright
+ * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez@gmail.com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis@gmail.com>
  *
  * All rights reserved.
  *
@@ -34,14 +37,11 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Forked from https://github.com/yhirose/linenoise
  */
 
-#ifndef __LINENOISE_H
-#define __LINENOISE_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 #include <stddef.h> /* For size_t. */
 
@@ -114,9 +114,3 @@ void linenoiseSetEncodingFunctions(
     linenoisePrevCharLen *prevCharLenFunc,
     linenoiseNextCharLen *nextCharLenFunc,
     linenoiseReadCode *readCodeFunc);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __LINENOISE_H */

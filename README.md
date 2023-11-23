@@ -1,5 +1,7 @@
 # Linenoise UTF-8
 
+> this fork has been adjusted for better integration with [fatscript/fry](https://gitlab.com/fatscript/fry)
+
 A minimal, zero-config, BSD licensed, readline replacement used in Redis,
 MongoDB, Android and many other projects.
 
@@ -17,12 +19,12 @@ Line editing with some support for history is a really important feature for com
 
 So what usually happens is either:
 
- * Large programs with configure scripts disabling line editing if readline is not present in the system, or not supporting it at all since readline is GPL licensed and libedit (the BSD clone) is not as known and available as readline is (real world example of this problem: Tclsh).
+ * Large programs with configure scripts disabling line editing if readline is not present in the system, or not supporting it at all since readline is GPL licensed and libedit (the BSD clone) is not as known and available as readline is (real world example of this problem: tclsh).
  * Smaller programs not using a configure script not supporting line editing at all (A problem we had with `redis-cli`, for instance).
  
 The result is a pollution of binaries without line editing support.
 
-So I spent more or less two hours doing a reality check resulting in this little library: is it *really* needed for a line editing library to be 20k lines of code? Apparently not, it is possibe to get a very small, zero configuration, trivial to embed library, that solves the problem. Smaller programs will just include this, supporting line editing out of the box. Larger programs may use this little library or just checking with configure if readline/libedit is available and resorting to Linenoise if not.
+So I spent more or less two hours doing a reality check resulting in this little library: is it *really* needed for a line editing library to be 20k lines of code? Apparently not, it is possible to get a very small, zero configuration, trivial to embed library, that solves the problem. Smaller programs will just include this, supporting line editing out of the box. Larger programs may use this little library or just checking with configure if readline/libedit is available and resorting to Linenoise if not.
 
 ## Terminals, in 2010.
 
@@ -105,7 +107,7 @@ You can disable it using `0` as argument.
 
 ## History
 
-Linenoise supporst history, so that the user does not have to retype
+Linenoise supports history, so that the user does not have to retype
 again and again the same things, but can use the down and up arrows in order
 to search and re-edit already inserted lines of text.
 
@@ -137,8 +139,8 @@ a "mask mode" that will just replace the characters the user is typing
 with `*` characters, like in the following example:
 
     $ ./linenoise_example
-    hello> get mykey
-    echo: 'get mykey'
+    hello> get my key
+    echo: 'get my key'
     hello> /mask
     hello> *********
 
@@ -244,7 +246,7 @@ user typed. You can do this by calling the following function:
 
     void linenoiseClearScreen(void);
 
-## Asyncrhronous API
+## Asynchronous API
 
 Sometimes you want to read from the keyboard but also from sockets or other
 external events, and at the same time there could be input to display to the
@@ -300,7 +302,7 @@ void stdinHasSomeData(void) {
 
 Now that we have a way to avoid blocking in the user input, we can use
 two calls to hide/show the edited line, so that it is possible to also
-show some input that we received (from socekts, bluetooth, whatever) on
+show some input that we received (from sockets, bluetooth, whatever) on
 screen:
 
     linenoiseHide(&ls);
@@ -344,4 +346,4 @@ You can test the example by running the example program with the `--async` optio
 ## Related projects
 
 * [Linenoise NG](https://github.com/arangodb/linenoise-ng) is a fork of Linenoise that aims to add more advanced features like UTF-8 support, Windows support and other features. Uses C++ instead of C as development language.
-* [Linenoise-swift](https://github.com/andybest/linenoise-swift) is a reimplementation of Linenoise written in Swift.
+* [Linenoise-swift](https://github.com/andybest/linenoise-swift) is an implementation of Linenoise written in Swift.

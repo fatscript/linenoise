@@ -1,19 +1,17 @@
-/* encoding/utf8.c -- VERSION 1.0
+/**
+ * @file encodings/utf8.c
+ * @authors antirez, yhirose, Antonio Prates <hello@aprates.dev>
+ * @brief Guerrilla line editing library against the idea that
+ *        a line editing lib needs to be 20,000 lines of C code.
+ *        Does a number of crazy assumptions that happen to be true
+ *        in 99.9999% of the 2010 UNIX computers around.
+ * 
+ * @version 1.3.4
+ * @date 2023-11-16
  *
- * Guerrilla line editing library against the idea that a line editing lib
- * needs to be 20,000 lines of C code.
- *
- * You can find the latest source code at:
- *
- *   http://github.com/antirez/linenoise
- *
- * Does a number of crazy assumptions that happen to be true in 99.9999% of
- * the 2010 UNIX computers around.
- *
- * ------------------------------------------------------------------------
- *
- * Copyright (c) 2010-2014, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ * @copyright
+ * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez@gmail.com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis@gmail.com>
  *
  * All rights reserved.
  *
@@ -39,6 +37,8 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Forked from https://github.com/yhirose/linenoise
  */
 
 #include <unistd.h>
@@ -333,8 +333,7 @@ static unsigned long combiningCharTable[] = {
 
 static unsigned long combiningCharTableSize = sizeof(combiningCharTable) / sizeof(combiningCharTable[0]);
 
-/* Check if the code is a wide character
- */
+/* Check if the code is a wide character */
 static int isWideChar(unsigned long cp) {
     size_t i;
     for (i = 0; i < wideCharTableSize; i++)
@@ -342,8 +341,7 @@ static int isWideChar(unsigned long cp) {
     return 0;
 }
 
-/* Check if the code is a combining character
- */
+/* Check if the code is a combining character */
 static int isCombiningChar(unsigned long cp) {
     size_t i;
     for (i = 0; i < combiningCharTableSize; i++)
@@ -351,8 +349,7 @@ static int isCombiningChar(unsigned long cp) {
     return 0;
 }
 
-/* Get length of previous UTF8 character
- */
+/* Get length of previous UTF8 character */
 static size_t prevUtf8CharLen(const char* buf, int pos) {
     int end = pos--;
     while (pos >= 0 && ((unsigned char)buf[pos] & 0xC0) == 0x80)
@@ -360,8 +357,7 @@ static size_t prevUtf8CharLen(const char* buf, int pos) {
     return end - pos;
 }
 
-/* Convert UTF8 to Unicode code point
- */
+/* Convert UTF8 to Unicode code point */
 static size_t utf8BytesToCodePoint(const char* buf, size_t len, int* cp) {
     if (len) {
         unsigned char byte = buf[0];
@@ -394,8 +390,7 @@ static size_t utf8BytesToCodePoint(const char* buf, size_t len, int* cp) {
     return 0;
 }
 
-/* Get length of next grapheme
- */
+/* Get length of next grapheme */
 size_t linenoiseUtf8NextCharLen(const char* buf, size_t buf_len, size_t pos, size_t *col_len) {
     size_t beg = pos;
     int cp;
@@ -415,8 +410,7 @@ size_t linenoiseUtf8NextCharLen(const char* buf, size_t buf_len, size_t pos, siz
     return pos - beg;
 }
 
-/* Get length of previous grapheme
- */
+/* Get length of previous grapheme */
 size_t linenoiseUtf8PrevCharLen(const char* buf, size_t buf_len, size_t pos, size_t *col_len) {
     UNUSED(buf_len);
     size_t end = pos;
@@ -434,8 +428,7 @@ size_t linenoiseUtf8PrevCharLen(const char* buf, size_t buf_len, size_t pos, siz
     return 0;
 }
 
-/* Read a Unicode from file.
- */
+/* Read a Unicode from file */
 size_t linenoiseUtf8ReadCode(int fd, char* buf, size_t buf_len, int* cp) {
     if (buf_len < 1) return -1;
     size_t nread = read(fd,&buf[0],1);
