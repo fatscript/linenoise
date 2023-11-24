@@ -187,7 +187,7 @@ FILE *lndebug_fp = NULL;
 #define lndebug(fmt, ...)
 #endif
 
-static char *strdup(const char *s) {
+static char *myStrdup(const char *s) {
     char *copy = s ? malloc(strlen(s) + 1) : NULL;
     if (copy) strcpy(copy, s);
     return copy;
@@ -924,7 +924,7 @@ void linenoiseEditHistoryNext(struct linenoiseState *l, int dir) {
         /* Update the current history entry before to
          * overwrite it with the next one. */
         free(history[history_len - 1 - l->history_index]);
-        history[history_len - 1 - l->history_index] = strdup(l->buf);
+        history[history_len - 1 - l->history_index] = myStrdup(l->buf);
         /* Show the new entry */
         l->history_index += (dir == LINENOISE_HISTORY_PREV) ? 1 : -1;
         if (l->history_index < 0) {
@@ -1098,7 +1098,7 @@ char *linenoiseEditFeed(struct linenoiseState *l) {
             refreshLine(l);
             hintsCallback = hc;
         }
-        return strdup(l->buf);
+        return myStrdup(l->buf);
     case CTRL_C:     /* ctrl-c */
         errno = EAGAIN;
         return NULL;
@@ -1341,7 +1341,7 @@ char *linenoise(const char *prompt) {
             len--;
             buf[len] = '\0';
         }
-        return strdup(buf);
+        return myStrdup(buf);
     } else {
         char *retval = linenoiseBlockingEdit(STDIN_FILENO,STDOUT_FILENO,buf,LINENOISE_MAX_LINE,prompt);
         return retval;
@@ -1401,7 +1401,7 @@ int linenoiseHistoryAdd(const char *line) {
 
     /* Add an heap allocated copy of the line in the history.
      * If we reached the max length, remove the older line. */
-    linecopy = strdup(line);
+    linecopy = myStrdup(line);
     if (!linecopy) return 0;
     if (history_len == history_max_len) {
         free(history[0]);
