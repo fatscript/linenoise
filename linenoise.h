@@ -7,7 +7,7 @@
  *        in 99.9999% of the 2010 UNIX computers around.
  * 
  * @version 1.3.4
- * @date 2023-11-16
+ * @date 2023-11-23
  *
  * @copyright
  * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez@gmail.com>
@@ -101,7 +101,6 @@ int linenoiseHistoryLoad(const char *filename);
 
 /* Other utilities. */
 void linenoiseClearScreen(void);
-void linenoiseSetMultiLine(int ml);
 void linenoisePrintKeyCodes(void);
 void linenoiseMaskModeEnable(void);
 void linenoiseMaskModeDisable(void);
