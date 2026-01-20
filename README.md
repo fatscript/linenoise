@@ -2,10 +2,11 @@
 
 > this fork has been adjusted for better integration with [fatscript/fry](https://gitlab.com/fatscript/fry)
 
-A minimal, zero-config, BSD licensed, readline replacement used in Redis,
-MongoDB, Android and many other projects.
+A minimal, zero-config, BSD licensed line editor used in Redis, MongoDB,
+Android and many other projects.
 
-* Single and multi line editing mode with the usual key bindings implemented.
+* UTF-8 support.
+* Multi line editing mode with the usual key bindings implemented.
 * History handling.
 * Completion.
 * Hints (suggestions at the right of the prompt as you type).
@@ -19,12 +20,12 @@ Line editing with some support for history is a really important feature for com
 
 So what usually happens is either:
 
- * Large programs with configure scripts disabling line editing if readline is not present in the system, or not supporting it at all since readline is GPL licensed and libedit (the BSD clone) is not as known and available as readline is (real world example of this problem: tclsh).
+ * Large programs with configure scripts disabling line editing if an external line editor is not present in the system, or not supporting it at all since the GPL-licensed option and its BSD clone are not as known and available (real world example of this problem: tclsh).
  * Smaller programs not using a configure script not supporting line editing at all (A problem we had with `redis-cli`, for instance).
  
 The result is a pollution of binaries without line editing support.
 
-So I spent more or less two hours doing a reality check resulting in this little library: is it *really* needed for a line editing library to be 20k lines of code? Apparently not, it is possible to get a very small, zero configuration, trivial to embed library, that solves the problem. Smaller programs will just include this, supporting line editing out of the box. Larger programs may use this little library or just checking with configure if readline/libedit is available and resorting to Linenoise if not.
+So I spent more or less two hours doing a reality check resulting in this little library: is it *really* needed for a line editing library to be 20k lines of code? Apparently not, it is possible to get a very small, zero configuration, trivial to embed library, that solves the problem. Smaller programs will just include this, supporting line editing out of the box. Larger programs may use this little library or just checking with configure if an external line editor is available and resorting to Linenoise if not.
 
 ## Terminals, in 2010.
 
@@ -91,19 +92,10 @@ this:
         linenoiseFree(line); /* Or just free(line) if you use libc malloc. */
     }
 
-## Single line VS multi line editing
+## Multi line editing
 
-By default, Linenoise uses single line editing, that is, a single row on the
-screen will be used, and as the user types more, the text will scroll towards
-left to make room. This works if your program is one where the user is
-unlikely to write a lot of text, otherwise multi line editing, where multiple
-screens rows are used, can be a lot more comfortable.
-
-In order to enable multi line editing use the following API call:
-
-    linenoiseSetMultiLine(1);
-
-You can disable it using `0` as argument.
+Linenoise in this fork always uses multi line editing, so long inputs wrap
+across terminal rows while remaining a single logical line.
 
 ## History
 

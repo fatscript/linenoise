@@ -42,20 +42,17 @@ int main(int argc, char **argv) {
     char *prgname = argv[0];
     int async = 0;
 
-    /* Parse options, with --multiline we enable multi line editing. */
+    /* Parse options. */
     while(argc > 1) {
         argc--;
         argv++;
-        if (!strcmp(*argv,"--multiline")) {
-            linenoiseSetMultiLine(1);
-            printf("Multi-line mode enabled.\n");
-        } else if (!strcmp(*argv,"--keycodes")) {
+        if (!strcmp(*argv,"--keycodes")) {
             linenoisePrintKeyCodes();
             exit(0);
         } else if (!strcmp(*argv,"--async")) {
             async = 1;
         } else {
-            fprintf(stderr, "Usage: %s [--multiline] [--keycodes] [--async]\n", prgname);
+            fprintf(stderr, "Usage: %s [--keycodes] [--async]\n", prgname);
             exit(1);
         }
     }

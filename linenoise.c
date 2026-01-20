@@ -6,7 +6,7 @@
  *        Does a number of crazy assumptions that happen to be true
  *        in 99.9999% of the 2010 UNIX computers around.
  * 
- * @version 1.3.4
+ * @version 1.3.4 (fry fork)
  * @date 2023-11-23
  *
  * @copyright
@@ -51,7 +51,7 @@
  * - Win32 support
  *
  * Bloat:
- * - History search like Ctrl+r in readline?
+ * - History search like Ctrl+r in other line editors?
  *
  * List of escape sequences used by this program, we do everything just
  * with three sequences. In order to be so cheap we may have some
@@ -81,7 +81,7 @@
  *            where n is the row and m is the column
  *
  * When multi line mode is enabled, we also use an additional escape
- * sequence. However multi line editing is disabled by default.
+ * sequence. Multi line editing is enabled by default in this fork.
  *
  * CUU (Cursor Up)
  *    Sequence: ESC [ n A
@@ -568,8 +568,7 @@ static void abFree(struct abuf *ab) {
     free(ab->b);
 }
 
-/* Helper of refreshSingleLine() and refreshMultiLine() to show hints
- * to the right of the prompt. */
+/* Helper of refreshMultiLine() to show hints to the right of the prompt. */
 void refreshShowHints(struct abuf *ab, struct linenoiseState *l, int pcollen) {
     char seq[64];
     size_t collen = pcollen+columnPos(l->buf,l->len,l->len);
@@ -728,8 +727,7 @@ static void refreshMultiLine(struct linenoiseState *l, int flags) {
     abFree(&ab);
 }
 
-/* Calls the two low level functions refreshSingleLine() or
- * refreshMultiLine() according to the selected mode. */
+/* Refresh the line using the multi line renderer. */
 static void refreshLineWithFlags(struct linenoiseState *l, int flags) {
     refreshMultiLine(l,flags);
 }
